@@ -10,8 +10,11 @@ module SprocketsUglifierWithSM
       # merge in any options passed in from our rails configuration - i wish
       # rails actually did this by default :/
       options = options.merge(DEFAULTS).merge!(Rails.application.config.assets.uglifier.to_h)
+      mangle_properties_regex = options[:mangle_properties]&.delete(:regex)
       @uglifier_filename_regex = Rails.application.config.assets.uglifier_filename_regex
       super options
+      options[:mangle_properties][:regex] = mangle_properties_regex
+      @uglifier = Sprockets::Autoload::Uglifier.new(options)
     end
 
     def call(input)
