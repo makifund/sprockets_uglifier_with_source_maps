@@ -10,12 +10,14 @@ module SprocketsUglifierWithSM
       # merge in any options passed in from our rails configuration - i wish
       # rails actually did this by default :/
       options = options.merge(DEFAULTS).merge!(Rails.application.config.assets.uglifier.to_h)
+      @uglifier_filename_regex = Rails.application.config.assets.uglifier_filename_regex
       super options
     end
 
     def call(input)
       data = input.fetch(:data)
       name = input.fetch(:name)
+      super and return if @uglifier_filename_regex.nil? || (name =~ @uglifier_filename_regex).nil?
 
       compressed_data, sourcemap = @uglifier.compile_with_map(data)
 
